@@ -15,7 +15,7 @@ cd site && python3 -m http.server 4321
 
 | Что | Где | Сейчас |
 |---|---|---|
-| Домен | `index.html`, `ru/index.html`, `robots.txt`, `sitemap.xml` | `https://example.com` — заменяется одной командой `./set-domain.sh вашдомен.com` |
+| Домен | `index.html`, `ru/index.html`, `robots.txt`, `sitemap.xml`, `llms.txt` | `https://strategic-facilitator.com` |
 | Полное имя | везде указано: Daria Ponomareva / Дарья Пономарёва | — |
 
 ## Русская версия
