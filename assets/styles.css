@@ -1,0 +1,227 @@
+/*
+  Layout follows the Figma file "Daria's stuff" one-to-one.
+  Desktop frame: 1280 × 7256 (always fills the full viewport width).
+  Mobile frame:  393 × 4574 (used below 768px, scales with the viewport).
+  Every positioned element (.c) takes its Figma coordinates from inline
+  custom properties: --x --y --w --h for desktop, --mx --my --mw --mh for mobile.
+  One design pixel = var(--u).
+*/
+
+@font-face {
+  font-family: "Armany";
+  src: url("fonts/armany-semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --sand: #f2e6d8;
+  --mint: #d9edec;
+  --navy: #2b4874;
+  --blue: #728aae;
+  --red: #a02311;
+  --coral: #e0674a;
+  --green: #205b47;
+  --purple: #492e75;
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display: "Armany", Georgia, serif;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+  background: var(--sand);
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--sand);
+  color: #000;
+  font-family: var(--sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul, ol { margin: 0; padding: 0; font: inherit; }
+a { color: inherit; }
+img { display: block; }
+
+.page { container-type: inline-size; width: 100%; }
+
+.canvas {
+  /* desktop: the 1280 frame scales with the window but never above --u-max
+     (1px = Figma 1:1); content stays centred, backgrounds and ribbon bleed to the edges */
+  --u-max: 1px;
+  --u: min(calc(100cqw / 1280), var(--u-max));
+  --ox: calc((100cqw - 1280 * var(--u)) / 2);
+  --fs-body: 25;
+  --fs-display: 80;
+  --lh-display: 100;
+  position: relative;
+  display: flow-root;
+  width: 100%;
+  height: calc((6393 + var(--oy, 0)) * var(--u));
+  overflow: hidden; /* the thread and photos never widen the page or trigger mobile zoom-out */
+}
+
+/* ---------- positioned element ---------- */
+.c {
+  position: absolute;
+  left: calc(var(--ox, 0px) + var(--x, 0) * var(--u));
+  top: calc((var(--oy, 0) + var(--y, 0)) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  z-index: var(--z, 5);
+}
+.m { display: none !important; }
+
+/* stacking: bands 0, shapes 1, text under the thread 2, thread 4, everything else 5 */
+.c.band { z-index: 0; }
+.c.shape { z-index: 1; }
+.c.thread { z-index: 4; pointer-events: none; }
+
+.band { background: var(--bg); }
+
+.shape img, .thread img, .photo img, .icon img { width: 100%; height: 100%; }
+.photo img { object-fit: cover; }
+
+/* ---------- typography ---------- */
+.t {
+  font-size: calc(var(--fs, var(--fs-body)) * var(--u));
+  line-height: 1.2;
+}
+.t p + p, .t p + ul { margin-top: 1.2em; }
+.t strong, .t h3 { font-weight: 700; }
+.t .med { font-weight: 500; }
+
+.d-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: calc(var(--dfs, var(--fs-display)) * var(--u));
+  line-height: calc(var(--lh, var(--lh-display)) * var(--u));
+}
+.d-title.lh-n { line-height: 1.55; }
+
+.list { list-style: disc; }
+.list li { margin-left: 1.5em; }
+.list li + li { margin-top: calc(20 * var(--u)); }
+
+.right { text-align: right; }
+.center { text-align: center; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(10 * var(--u));
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: calc(var(--bfs, 45) * 0.8 * var(--u));
+  line-height: 1;
+  padding-bottom: calc(4 * var(--u));
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter .2s ease, transform .2s ease;
+}
+.btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn:focus-visible, .icon:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+
+.icon { display: block; transition: opacity .2s ease; }
+.icon:hover { opacity: .75; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+br.m { display: none; }
+
+.help-list, .stages { list-style: none; }
+.right-d { text-align: right; }
+.center-d { text-align: center; }
+.photo.crop { overflow: hidden; }
+.photo.crop img { position: absolute; left: -10.86%; top: -13.1%; width: 110.86%; height: 110.81%; max-width: none; }
+.num { font-size: calc(128 * var(--u)); line-height: calc(116 * var(--u)); }
+.quote { font-family: var(--display); font-weight: 600; line-height: 1.55; }
+
+/* full-width bands stretch past the centred frame to the window edges */
+@media (min-width: 768px) {
+  .c.band.bl { left: 0; width: calc(var(--ox) + (var(--x) + var(--w)) * var(--u)); }
+  .c.band.br { right: 0; width: auto; }
+  .c.band.bl.br { left: 0; right: 0; width: auto; }
+}
+
+/* ================= MOBILE (393 frame) ================= */
+@media (max-width: 767px) {
+  .canvas {
+    --u: calc(100cqw / 393);
+    --ox: 0px;
+    --fs-body: 14;
+    --fs-display: 48;
+    --lh-display: 48;
+    width: 100%;
+    height: calc((var(--mch, 4574) + var(--moy, 0)) * var(--u));
+  }
+  .c {
+    left: calc(var(--mx, 0) * var(--u));
+    top: calc((var(--moy, 0) + var(--my, 0)) * var(--u));
+    width: calc(var(--mw) * var(--u));
+    height: calc(var(--mh) * var(--u));
+    z-index: var(--mz, var(--z, 5));
+  }
+  .t { font-size: calc(var(--mfs, var(--fs-body)) * var(--u)); }
+  .d { display: none !important; }
+  .m { display: block !important; }
+  .btn.m { display: flex !important; }
+  br.d { display: none; }
+  br.m { display: inline; }
+  .list li { margin-left: 1.5em; }
+  .list.tight li + li { margin-top: calc(10 * var(--u)); }
+  .btn { font-size: calc(var(--mbfs, 15) * 0.8 * var(--u)); border-radius: calc(5 * var(--u)); padding-bottom: 0; }
+
+  .right-d, .center-d { text-align: left; }
+  .photo.crop img { position: static; width: 100%; height: 100%; }
+  .right-m { text-align: right; }
+  .center-m { text-align: center; }
+  .num { font-size: calc(55 * var(--u)); }
+  .quote { line-height: 1.2; }
+  /* mobile mock-up palette */
+  .hero-role { color: var(--purple); }
+  .d-title { font-size: calc(var(--mdfs, var(--fs-display)) * var(--u)); line-height: calc(var(--mlh, 48) * var(--u)); }
+  .d-title.num { font-size: calc(55 * var(--u)); line-height: calc(116 * var(--u)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .icon { transition: none; }
+}
+
+/* ---------- thread: inline SVG, animated by assets/thread.js ---------- */
+.thread svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.thread path { stroke-linecap: butt; }
+/* with JS the two static threads are replaced by one morphing thread */
+.js-thread .c.thread { display: none !important; }
+.thread-morph { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.thread-morph svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* section edges drawn by assets/thread.js along the ribbon; Figma shapes are the no-JS fallback */
+.js-thread .static-edge { display: none !important; }
+.edge-morph { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.edge-morph svg { display: block; width: 100%; height: 100%; }
+
+/* ---------- Russian page: Armany has no Cyrillic, headings use EB Garamond ExtraBold Italic ---------- */
+html[lang="ru"] .d-title,
+html[lang="ru"] .quote { font-family: "EB Garamond", Georgia, serif; font-style: italic; font-weight: 800; }
+html[lang="ru"] .d-title.num { font-family: var(--display); font-style: normal; font-weight: 600; }
+
+
+/* RU: hero is taller (title sits above the ribbon), so the scale is also
+   capped by window height — the first-screen button always fits */
+html[lang="ru"] .canvas { --u-max: min(1px, calc(100vh / 960)); }
